@@ -1,0 +1,25 @@
+import kadabra.mutation.BitWiseOperatorMutator;
+import weaver.WeaverJps;
+
+aspectdef BinaryExpressionMutatorTest
+
+// Select binary operators in each file
+for($op of WeaverJps.search('expression').get()) {
+
+	if($op.operator === '~') {
+		var mutator = new BitWiseOperatorMutator($op, "!"); // [">", "=="] is also supported
+
+		while(mutator.hasMutations()) {
+			// Mutate
+			mutator.mutate();
+
+			// Print
+			println($op.ancestor('method').srcCode);
+
+			// Restore operator
+			mutator.restore();
+		}
+	}
+}
+
+end

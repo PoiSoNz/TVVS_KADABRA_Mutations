@@ -1,0 +1,70 @@
+import lara.mutation.Mutator;
+
+/**
+ *  @param {$binaryExpression} $binaryExpression - A join point of type binaryExpression.
+ *  @param {String[] | String...} newOperators - Operators that will be used to mutate the given binaryExpression.
+ */
+var BitWiseOperatorMutator = function($bitwiseOperator) {
+	// Parent constructor
+    Mutator.call(this);
+
+	// Instance variables
+	this.$bitwiseOperator = $bitwiseOperator;
+	this.newOperators = arrayFromArgs(arguments, 1);
+	this.currentIndex = 0;
+	this.previousOp = undefined;
+
+	this.unaryOperators = ["~", ""];
+	this.binaryOperators = ["|", "&", "^"];
+
+	this.validMutations = [];
+	
+
+	
+	// Checks
+
+	// Check it is a bitwise operator
+	if($bitwiseOperator.instanceOf('binaryExpression') && this.binaryOperators.contains($bitwiseOperator.operator)) {
+		println("binario bitwise");
+		this.validMutations = Object.assign([], this.binaryOperators);
+	}
+	else if($bitwiseOperator.instanceOf('unaryExpression') && this.unaryOperators.contains($bitwiseOperator.operator)) {
+		println("unario bitwise");
+		this.validMutations = Object.assign([], this.binaryOperators);
+	}
+	else {
+		throw "Expected a bitwise operator, received a " + $binaryExpression.joinPointType;
+	}
+	
+	// TODO: Check if operators are valid
+
+};
+
+// Inheritance
+BitWiseOperatorMutator.prototype = Object.create(Mutator.prototype);
+
+
+/*** IMPLEMENTATION OF INSTANCE METHODS ***/
+
+BitWiseOperatorMutator.prototype.hasMutations = function() {
+	return this.currentIndex < this.newOperators.length;
+}
+
+
+BitWiseOperatorMutator.prototype._mutatePrivate = function() {
+	// Obtain new operator, increment index
+	var newOp = this.newOperators[this.currentIndex];
+	this.currentIndex++;
+	
+	// Store current operator
+	this.previousOp = this.$bitwiseOperator.operator;
+
+	// Set new operator
+	this.$bitwiseOperator.operator = newOp;
+}
+
+BitWiseOperatorMutator.prototype._restorePrivate = function() {
+	// Restore operator
+	this.$bitwiseOperator.operator = this.previousOp;
+	this.previousOp = undefined;
+}
