@@ -14,29 +14,44 @@ var BitWiseOperatorMutator = function($bitwiseOperator) {
 	this.currentIndex = 0;
 	this.previousOp = undefined;
 
-	this.unaryOperators = ["~", ""];
-	this.binaryOperators = ["|", "&", "^"];
+	var unaryOperators = ["~", ""];
+	var binaryOperators = ["|", "&", "^"];
 
-	this.validMutations = [];
-	
-
+	var validMutations = [];
 	
 	// Checks
+	if(this.newOperators.length == 0)
+		throw "Expected mutations but received none";
+
 
 	// Check it is a bitwise operator
-	if($bitwiseOperator.instanceOf('binaryExpression') && this.binaryOperators.contains($bitwiseOperator.operator)) {
-		println("binario bitwise");
-		this.validMutations = Object.assign([], this.binaryOperators);
+	if($bitwiseOperator.instanceOf('binaryExpression') && binaryOperators.contains($bitwiseOperator.operator)) {
+		this.validMutations = Object.assign([], binaryOperators);
 	}
-	else if($bitwiseOperator.instanceOf('unaryExpression') && this.unaryOperators.contains($bitwiseOperator.operator)) {
-		println("unario bitwise");
-		this.validMutations = Object.assign([], this.binaryOperators);
+	else if($bitwiseOperator.instanceOf('unaryExpression') && unaryOperators.contains($bitwiseOperator.operator)) {
+		this.validMutations = Object.assign([], unaryOperators);	
 	}
 	else {
-		throw "Expected a bitwise operator, received a " + $binaryExpression.joinPointType;
+		throw "Expected a bitwise operator, received a " + $bitwiseOperator.operator;
 	}
+
 	
-	// TODO: Check if operators are valid
+	var index = this.validMutations.indexOf($bitwiseOperator.operator);
+	this.validMutations.splice(index, 1);
+	
+	
+	for(var i = 0; i < this.newOperators.length; i++) {
+		if(!this.validMutations.contains(this.newOperators[i])) {
+			var appendMessage = "";
+			var invalidOperator = this.newOperators[i] === "" ? "\"\"" : this.newOperators[i];
+			if($bitwiseOperator.instanceOf('unaryExpression'))
+				appendMessage = ", expected \"\"";
+			else
+				appendMessage = ", expected at least one of " + this.validMutations.toString();
+			
+			throw "Received invalid mutation " + invalidOperator + appendMessage;
+		}
+	}
 
 };
 
@@ -57,14 +72,28 @@ BitWiseOperatorMutator.prototype._mutatePrivate = function() {
 	this.currentIndex++;
 	
 	// Store current operator
-	this.previousOp = this.$bitwiseOperator.operator;
+	this.previousOp = this.$bitwiseOperator.srcCode;
 
 	// Set new operator
-	this.$bitwiseOperator.operator = newOp;
+	if(newOp === "")
+		this.unaryMutate();
+	else
+		this.$bitwiseOperator.operator = newOp;
 }
 
 BitWiseOperatorMutator.prototype._restorePrivate = function() {
-	// Restore operator
-	this.$bitwiseOperator.operator = this.previousOp;
+	// Restore operator	
+	this.$bitwiseOperator = this.$bitwiseOperator.insertReplace(this.previousOp);
+
 	this.previousOp = undefined;
+}
+
+BitWiseOperatorMutator.prototype.unaryMutate = function() {
+	// Restore operator
+	var children = this.$bitwiseOperator.children;
+
+	var toReplace = children[1].srcCode;
+	this.$bitwiseOperator = this.$bitwiseOperator.insertReplace(toReplace);
+
+	//podemos assumir que UnaryExpression tem sempre 2 filhos?
 }

@@ -7,7 +7,7 @@ aspectdef BinaryExpressionMutatorTest
 for($op of WeaverJps.search('expression').get()) {
 
 	if($op.operator === '~') {
-		var mutator = new BitWiseOperatorMutator($op, "!"); // [">", "=="] is also supported
+		var mutator = new BitWiseOperatorMutator($op, ""); // [">", "=="] is also supported
 
 		while(mutator.hasMutations()) {
 			// Mutate
@@ -18,6 +18,8 @@ for($op of WeaverJps.search('expression').get()) {
 
 			// Restore operator
 			mutator.restore();
+
+			println($op.ancestor('method').srcCode);
 		}
 	}
 }
