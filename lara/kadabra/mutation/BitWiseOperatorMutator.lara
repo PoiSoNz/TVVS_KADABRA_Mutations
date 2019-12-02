@@ -12,7 +12,7 @@ var BitWiseOperatorMutator = function($bitwiseOperator) {
 	this.$bitwiseOperator = $bitwiseOperator;
 	this.newOperators = arrayFromArgs(arguments, 1);
 	this.currentIndex = 0;
-	this.previousOp = undefined;
+	this.originalExpression = undefined;
 
 	var unaryOperators = ["~", ""];
 	var binaryOperators = ["|", "&", "^"];
@@ -70,9 +70,8 @@ BitWiseOperatorMutator.prototype._mutatePrivate = function() {
 	// Obtain new operator, increment index
 	var newOp = this.newOperators[this.currentIndex];
 	this.currentIndex++;
-	
-	// Store current operator
-	this.previousOp = this.$bitwiseOperator.srcCode;
+
+	this.originalExpression = this.$bitwiseOperator.copy();
 
 	// Set new operator
 	if(newOp === "")
@@ -82,18 +81,12 @@ BitWiseOperatorMutator.prototype._mutatePrivate = function() {
 }
 
 BitWiseOperatorMutator.prototype._restorePrivate = function() {
-	// Restore operator	
-	this.$bitwiseOperator = this.$bitwiseOperator.insertReplace(this.previousOp);
-
-	this.previousOp = undefined;
+	// Restore operator
+	this.$bitwiseOperator = this.$bitwiseOperator.insertReplace(this.originalExpression);
+	this.originalExpression = undefined;
 }
 
 BitWiseOperatorMutator.prototype.unaryMutate = function() {
-	// Restore operator
-	var children = this.$bitwiseOperator.children;
-
-	var toReplace = children[1].srcCode;
+	var toReplace = this.$bitwiseOperator.operand.copy();
 	this.$bitwiseOperator = this.$bitwiseOperator.insertReplace(toReplace);
-
-	//podemos assumir que UnaryExpression tem sempre 2 filhos?
 }

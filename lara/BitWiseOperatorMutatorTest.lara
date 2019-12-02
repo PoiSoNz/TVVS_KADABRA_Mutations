@@ -6,8 +6,8 @@ aspectdef BinaryExpressionMutatorTest
 // Select binary operators in each file
 for($op of WeaverJps.search('expression').get()) {
 
-	if($op.operator === '~') {
-		var mutator = new BitWiseOperatorMutator($op, ""); // [">", "=="] is also supported
+	if($op.operator === '|') {
+		var mutator = new BitWiseOperatorMutator($op, "^", "&"); // [">", "=="] is also supported
 
 		while(mutator.hasMutations()) {
 			// Mutate
@@ -19,7 +19,6 @@ for($op of WeaverJps.search('expression').get()) {
 			// Restore operator
 			mutator.restore();
 
-			println($op.ancestor('method').srcCode);
 		}
 	}
 }
