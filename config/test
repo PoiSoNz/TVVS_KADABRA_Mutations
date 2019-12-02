@@ -10,6 +10,7 @@
       <FileList>
         <fileList>
           <file>..\java\GrandeTeste.java</file>
+          <file>..\java\MiniTeste.java</file>
         </fileList>
       </FileList>
     </entry>
@@ -65,7 +66,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>..\lara\BitWiseOperatorMutatorTest.lara</file>
+      <file>..\lara\InheritanceMutatorTest.lara</file>
     </entry>
     <entry>
       <string>stack trace</string>

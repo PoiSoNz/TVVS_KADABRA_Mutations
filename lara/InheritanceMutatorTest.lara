@@ -1,0 +1,24 @@
+import kadabra.mutation.InheritanceIODMutator;
+import weaver.WeaverJps;
+
+aspectdef InheritanceMutatorTest
+
+// Select binary operators in each file
+for($method of WeaverJps.search('method').get()) {
+
+	for(var i = 0; i < $method.children.length; i++) {
+		if($method.children[i].instanceOf('expression') && $method.children[i].type === 'Override') {
+			println("chamar mutator no metodo " + $method.toReference);
+
+			var mutator = new InheritanceIODMutator($method);
+			mutator.mutate();
+
+			println($method.srcCode);
+
+			mutator.restore();
+			break;
+		}
+	}
+}
+
+end

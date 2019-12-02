@@ -1,9 +1,8 @@
 import kadabra.mutation.BitWiseOperatorMutator;
 import weaver.WeaverJps;
 
-aspectdef BinaryExpressionMutatorTest
+aspectdef BitWiseOperatorMutatorTest
 
-// Select binary operators in each file
 for($op of WeaverJps.search('expression').get()) {
 
 	if($op.operator === '|') {
