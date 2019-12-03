@@ -3,7 +3,7 @@
 public class GrandeTeste {
     protected int K = 0;
 
-    public int GrandeTeste() {
+    public GrandeTeste() {
         K = 3;
         int c = ~(K);
         int d = K;
@@ -12,7 +12,12 @@ public class GrandeTeste {
         K = ~(K);
         K = (K) | 4;
         Boolean b = (K) < 4;
-        return K;
+        // return K;
+    }
+
+    public int ola() {
+        int a = 2;
+        return a;
     }
 
     public int testOverride() {

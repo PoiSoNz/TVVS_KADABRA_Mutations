@@ -1,0 +1,57 @@
+import lara.mutation.Mutator;
+
+/**
+ *  @param {$super} $super - A join point of type expression corresponding to a super constructor call.
+ */
+var InheritanceIPCMutator = function($super) {
+	// Parent constructor
+   	Mutator.call(this);
+
+	// Instance variables
+	this.$super = $super;
+	this.commentedCall = undefined;
+	this.mutationsArgs = arrayFromArgs(arguments, 1);
+	this.originalMethod = method.copy();
+	this.mutated = false;
+	this.overTagIndex = -1;
+	
+	var valid = false;
+	if(this.mutationsArgs.length > 0)
+		throw "InheritanceIPCMutator expects exactly one argument";
+	 //TODO: verificar se é super
+	//if(!(this.$super.instanceOf('call'))
+
+};
+
+// Inheritance
+InheritanceIPCMutator.prototype = Object.create(Mutator.prototype);
+
+
+/*** IMPLEMENTATION OF INSTANCE METHODS ***/
+
+InheritanceIPCMutator.prototype.hasMutations = function() {
+	return !this.mutated;
+}
+
+
+InheritanceIPCMutator.prototype._mutatePrivate = function() {
+	println("mutate");
+
+	this.commentedCall = Utils_commentJoinpoint($super);
+
+	var methodCopy = this.method.copy();
+	println(methodCopy.children);
+	methodCopy.children.splice(this.overTagIndex, 1);
+	println(methodCopy.children);
+	
+	this.method = this.method.insertReplace(methodCopy.srcCode);
+	this.mutated = true;
+
+	println(this.method.ast);
+}
+
+InheritanceIPCMutator.prototype._restorePrivate = function() {
+	// Restore operator
+	this.method = this.method.insertReplace(this.originalMethod);
+	this.originalMethod = undefined;
+}

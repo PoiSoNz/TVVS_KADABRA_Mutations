@@ -1,12 +1,13 @@
-import kadabra.mutation.InheritanceIODMutator;
+import kadabra.mutation.inheritance.InheritanceIODMutator;
+import kadabra.mutation.utils.Utils;
 import weaver.WeaverJps;
 
 aspectdef InheritanceMutatorTest
 
-// Select binary operators in each file
+// Select overriden functions in each file
 for($method of WeaverJps.search('method').get()) {
 
-	for(var i = 0; i < $method.children.length; i++) {
+	/*for(var i = 0; i < $method.children.length; i++) {
 		if($method.children[i].instanceOf('expression') && $method.children[i].type === 'Override') {
 			println("chamar mutator no metodo " + $method.toReference);
 
@@ -17,6 +18,25 @@ for($method of WeaverJps.search('method').get()) {
 
 			mutator.restore();
 			break;
+		} else if($method.children[i].instanceOf('expression')) {
+
+		}
+	}*/
+}
+
+// Select super constructor call in each file
+for($method of WeaverJps.search('constructor').get()) {
+	for($descendant of $method.descendants) {
+		//TODO: Verificar se é super
+		if($descendant.instanceOf('call')) {
+			var mutator = new InheritanceIPCMutator($descendant);
+			mutator.mutate();
+
+			println($descendant.srcCode);
+
+			mutator.restore();
+			break;
+			println($descendant.declarator);
 		}
 	}
 }
