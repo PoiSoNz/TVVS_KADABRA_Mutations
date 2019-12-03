@@ -3,6 +3,7 @@
  */
 var Utils_commentJoinpoint = function() {
 	println("boas");
+	///* + srcCode + */
 	// Instance variables
 	this.method = method;
 	this.mutationsArgs = arrayFromArgs(arguments, 1);
