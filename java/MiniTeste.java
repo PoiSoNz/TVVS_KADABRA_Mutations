@@ -3,7 +3,7 @@ public class MiniTeste extends GrandeTeste{
 	public MiniTeste() {
 		super();
 		int v = abc();
-		//return 0;
+		
 	}
 	
 	@Override

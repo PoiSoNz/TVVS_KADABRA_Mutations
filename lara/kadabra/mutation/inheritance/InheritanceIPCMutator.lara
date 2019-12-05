@@ -9,17 +9,19 @@ var InheritanceIPCMutator = function($super) {
 
 	// Instance variables
 	this.$super = $super;
-	this.commentedCall = undefined;
+	this.originalSuperParent = undefined;
+	this.superParent = $super.parent;
 	this.mutationsArgs = arrayFromArgs(arguments, 1);
-	this.originalMethod = method.copy();
 	this.mutated = false;
-	this.overTagIndex = -1;
 	
-	var valid = false;
 	if(this.mutationsArgs.length > 0)
 		throw "InheritanceIPCMutator expects exactly one argument";
-	 //TODO: verificar se é super
-	//if(!(this.$super.instanceOf('call'))
+	println("chamando IPC na funÃƒÂ§ao:");
+	println(this.$super.srcCode);
+	
+	 //TODO: verificar se ÃƒÆ’Ã‚Â© super
+	if(!(this.$super.instanceOf('call') && this.$super.srcCode.startsWith("super(") && this.$super.srcCode.endsWith(")")))
+		throw "InheritanceIPCMutator expects a call to the super constructor, i.e. \"super(...)\", got " + this.$super.srcCode + " instead";
 
 };
 
@@ -36,22 +38,28 @@ InheritanceIPCMutator.prototype.hasMutations = function() {
 
 InheritanceIPCMutator.prototype._mutatePrivate = function() {
 	println("mutate");
+	this.originalSuperParent = this.$super.parent.copy();
 
-	this.commentedCall = Utils_commentJoinpoint($super);
-
-	var methodCopy = this.method.copy();
-	println(methodCopy.children);
-	methodCopy.children.splice(this.overTagIndex, 1);
-	println(methodCopy.children);
+	println("super parent antes");
+	println(this.superParent.srcCode);
 	
-	this.method = this.method.insertReplace(methodCopy.srcCode);
-	this.mutated = true;
+	// Remove super call
+	this.$super.remove();
 
-	println(this.method.ast);
+	println("super parent DEPOIS");
+	println(this.superParent.srcCode);
+	
+	this.mutated = true;
 }
 
 InheritanceIPCMutator.prototype._restorePrivate = function() {
+	println("INICIOU RESTORE");
+	println("super parent antes do restore");
+	println(this.superParent.srcCode);
+	println("super parent a restaurar");
+	println(this.originalSuperParent.srcCode);
 	// Restore operator
-	this.method = this.method.insertReplace(this.originalMethod);
-	this.originalMethod = undefined;
+	this.superParent = this.superParent.insertReplace(this.originalSuperParent.copy());
+	this.originalSuperParent = undefined;
+	println("FEZ RESTORE");
 }

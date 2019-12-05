@@ -24,8 +24,7 @@ var InheritanceIODMutator = function(method) {
 		}
 	}
 	if(!valid)
-		throw "InheritanceIODMutator expects overriden method";	
-
+		throw "InheritanceIODMutator expects overriden method";
 };
 
 // Inheritance
