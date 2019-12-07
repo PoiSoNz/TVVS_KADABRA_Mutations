@@ -66,7 +66,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>..\lara\InheritanceMutatorTest.lara</file>
+      <file>..\lara\BitWiseOperatorMutatorTest.lara</file>
     </entry>
     <entry>
       <string>stack trace</string>

@@ -4,6 +4,7 @@ public class GrandeTeste {
     protected int K = 0;
 
     public GrandeTeste() {
+        super();
         K = 3;
         int c = ~(K);
         int d = K;
