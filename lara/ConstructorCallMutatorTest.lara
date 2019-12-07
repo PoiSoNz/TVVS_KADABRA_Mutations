@@ -1,0 +1,25 @@
+import kadabra.mutation.ConstructorCallMutator;
+import weaver.WeaverJps;
+
+aspectdef BitWiseOperatorMutatorTest
+
+for($ref of WeaverJps.search('reference').get().reverse()) {
+
+	if($ref.name === "<init>" && $ref.type === "Executable" && $ref.parent.srcCode !== "super()") {
+		var mutator = new ConstructorCallMutator($ref);
+
+		while(mutator.hasMutations()) {
+			// Mutate
+			mutator.mutate();
+
+			// Print
+			println($ref.ancestor("class").srcCode);
+
+			// Restore operator
+			mutator.restore();
+
+		}
+	}
+}
+
+end

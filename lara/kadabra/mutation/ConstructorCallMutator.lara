@@ -1,0 +1,55 @@
+import lara.mutation.Mutator;
+
+/**
+ *  @param {$binaryExpression} $binaryExpression - A join point of type binaryExpression.
+ *  @param {String[] | String...} newOperators - Operators that will be used to mutate the given binaryExpression.
+ */
+var ConstructorCallMutator = function($reference) {
+	// Parent constructor
+    Mutator.call(this);
+
+	// Instance variables
+	this.$referenceParent = $reference.parent;
+	this.extraArgs = arrayFromArgs(arguments, 1);
+	this.mutated = false;
+	this.originalParent = undefined;
+
+	
+	
+	// Checks
+	if(this.extraArgs.length != 0)
+		throw "Expected only 1 argument but received " + (this.extraArgs.length + 1);
+
+
+	// Check it is a constructor call reference
+	if($reference.name !== "<init>" || $reference.type !== "Executable" || $reference.parent.srcCode === "super()")
+		throw "Expected a valid constructor call reference, received " + $reference;
+
+};
+
+// Inheritance
+ConstructorCallMutator.prototype = Object.create(Mutator.prototype);
+
+
+/*** IMPLEMENTATION OF INSTANCE METHODS ***/
+
+ConstructorCallMutator.prototype.hasMutations = function() {
+	return !this.mutated;
+}
+
+
+ConstructorCallMutator.prototype._mutatePrivate = function() {
+	this.mutated = true;
+
+	//println(this.$referenceParent.parent.srcCode);
+
+	this.originalParent = this.$referenceParent.copy();
+	this.$referenceParent = this.$referenceParent.insertReplace("null");
+
+	//println(this.$referenceParent.parent.srcCode);
+}
+
+ConstructorCallMutator.prototype._restorePrivate = function() {
+	this.$referenceParent = this.$referenceParent.insertReplace(this.originalParent);
+	this.originalParent = undefined;
+}
