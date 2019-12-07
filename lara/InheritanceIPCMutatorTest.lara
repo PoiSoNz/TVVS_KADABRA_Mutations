@@ -1,0 +1,31 @@
+import kadabra.mutation.inheritance.InheritanceIPCMutator;
+import kadabra.mutation.utils.Utils;
+import weaver.WeaverJps;
+
+aspectdef InheritanceIPCMutatorTest
+
+var $jp = WeaverJps.root();
+
+var mutator = new InheritanceIPCMutator($jp);
+
+while(mutator.hasMutations()) {
+	// Print original
+	print("original");
+	println($jp.srcCode);
+	
+	// Mutate
+	mutator.mutate();
+
+	// Print mutation
+	print("mutado");
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator.restore();
+
+	// Print restore
+	print("restaurado");
+	println($jp.srcCode);
+}
+
+end

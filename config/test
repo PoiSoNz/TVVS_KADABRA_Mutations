@@ -9,8 +9,7 @@
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>..\java\GrandeTeste.java</file>
-          <file>..\java\MiniTeste.java</file>
+          <file>..\java\InheritanceIPCTest.java</file>
         </fileList>
       </FileList>
     </entry>
@@ -66,7 +65,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>..\lara\InheritanceMutatorTest.lara</file>
+      <file>..\lara\InheritanceIPCMutatorTest.lara</file>
     </entry>
     <entry>
       <string>stack trace</string>

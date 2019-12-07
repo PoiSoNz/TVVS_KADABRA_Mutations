@@ -1,0 +1,79 @@
+import lara.mutation.Mutator;
+
+/**
+ *  @param {$joinpoint} $joinpoint - Joinpoint used as starting point to search for methods whose return value will be mutated.
+ *  Return value mutations:
+ *  - If method type is primitive INT, SHORT, LONG, CHAR, FLOAT or DOUBLE, return value is replaced with 0.
+ *  - If method type is primitive or boxed BOOLEAN, return value is replaced by true.
+ */
+var ReturnValueMutator = function($joinpoint) {
+	// Parent constructor
+    Mutator.call(this);
+
+	// Instance variables
+	this.toMutate = [];
+	this.currentIndex = 0;
+	
+	this.originalReturnExpression = undefined;
+	this.$returnExpression = undefined;
+	
+	// Checks
+	var extraArgs = arrayFromArgs(arguments, 1);
+	if(extraArgs.length != 0)
+		throw "Expected only 1 argument but received " + (this.extraArgs.length + 1);
+
+	this.extractMutationTargets($joinpoint);
+};
+
+
+// Inheritance
+ReturnValueMutator.prototype = Object.create(Mutator.prototype);
+
+
+/*** IMPLEMENTATION OF INSTANCE METHODS ***/
+
+// Analyze method nodes available for Return Value mutation and store their return statements
+ReturnValueMutator.prototype.extractMutationTargets = function($joinpoint) {
+	var methodZeroTypes = ['int', 'short', 'long', 'char', 'float', 'double']; // Types whose return value will changed to 0.
+	var methodTrueTypes = ['boolean', 'Boolean']; // Types whose return value will changed to true.
+	
+	for($method of WeaverJps.searchFrom($joinpoint, 'method').get()) {
+		// Check it is a method capable of being mutated
+		var mutationValue;
+		if(methodZeroTypes.contains($method.returnType)) {
+			mutationValue = '0';
+		} else if(methodTrueTypes.contains($method.returnType)) {
+			mutationValue = 'true';
+		} else {
+			continue;
+		}
+		
+		// Store return statement for later modification
+		var methodReturn = WeaverJps.searchFrom($method, 'return').first();
+		this.toMutate.push([methodReturn, mutationValue]);
+	}
+}
+
+ReturnValueMutator.prototype.hasMutations = function() {
+	return this.currentIndex < this.toMutate.length;
+}
+
+
+ReturnValueMutator.prototype._mutatePrivate = function() {
+	var mutationInfo = this.toMutate[this.currentIndex++];
+
+	this.$returnExpression = mutationInfo[0];
+	var mutationValue = mutationInfo[1];
+	
+	this.originalReturnExpression = this.$returnExpression.copy();
+	
+	var mutatedReturn = 'return ' + mutationValue + ';';
+	this.$returnExpression = this.$returnExpression.insertReplace(mutatedReturn);
+}
+
+ReturnValueMutator.prototype._restorePrivate = function() {
+	this.$returnExpression = this.$returnExpression.insertReplace(this.originalReturnExpression);
+	
+	this.originalReturnExpression = undefined;
+	this.$returnExpression = undefined;
+}
