@@ -6,14 +6,14 @@ aspectdef BitWiseOperatorMutatorTest
 for($op of WeaverJps.search('expression').get()) {
 
 	if($op.operator === '|') {
-		var mutator = new BitWiseOperatorMutator($op, "^", "&"); // [">", "=="] is also supported
+		var mutator = new BitWiseOperatorMutator($op, "rhs", "^", "lhs", "&"); // [">", "=="] is also supported
 
 		while(mutator.hasMutations()) {
 			// Mutate
 			mutator.mutate();
 
 			// Print
-			println($op.ancestor('method').srcCode);
+			println($op.ancestor('constructor').srcCode);
 
 			// Restore operator
 			mutator.restore();

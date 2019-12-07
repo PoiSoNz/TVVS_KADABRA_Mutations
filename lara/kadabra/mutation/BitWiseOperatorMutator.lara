@@ -15,7 +15,7 @@ var BitWiseOperatorMutator = function($bitwiseOperator) {
 	this.originalExpression = undefined;
 
 	var unaryOperators = ["~", ""];
-	var binaryOperators = ["|", "&", "^"];
+	var binaryOperators = ["|", "&", "^", "lhs", "rhs"];
 
 	var validMutations = [];
 	
@@ -77,7 +77,7 @@ BitWiseOperatorMutator.prototype._mutatePrivate = function() {
 	if(newOp === "")
 		this.unaryMutate();
 	else
-		this.$bitwiseOperator.operator = newOp;
+		this.binaryMutate(newOp);
 }
 
 BitWiseOperatorMutator.prototype._restorePrivate = function() {
@@ -89,4 +89,17 @@ BitWiseOperatorMutator.prototype._restorePrivate = function() {
 BitWiseOperatorMutator.prototype.unaryMutate = function() {
 	var toReplace = this.$bitwiseOperator.operand.copy();
 	this.$bitwiseOperator = this.$bitwiseOperator.insertReplace(toReplace);
+}
+
+BitWiseOperatorMutator.prototype.binaryMutate = function(newOp) {
+	if(newOp === "lhs") {
+		var lhs = this.$bitwiseOperator.lhs.copy();
+		this.$bitwiseOperator = this.$bitwiseOperator.insertReplace(lhs);
+	}
+	else if(newOp === "rhs") {
+		var rhs = this.$bitwiseOperator.rhs.copy();
+		this.$bitwiseOperator = this.$bitwiseOperator.insertReplace(rhs);
+	}
+	else
+		this.$bitwiseOperator.operator = newOp;
 }
