@@ -3,23 +3,20 @@ import weaver.WeaverJps;
 
 aspectdef BitWiseOperatorMutatorTest
 
-for($ref of WeaverJps.search('reference').get().reverse()) {
+var $jp = WeaverJps.root();
 
-	if($ref.name === "<init>" && $ref.type === "Executable" && $ref.parent.srcCode !== "super()") {
-		var mutator = new ConstructorCallMutator($ref);
+var mutator = new ConstructorCallMutator($jp);
 
-		while(mutator.hasMutations()) {
-			// Mutate
-			mutator.mutate();
+while(mutator.hasMutations()) {
+	// Mutate
+	mutator.mutate();
 
-			// Print
-			println($ref.ancestor("class").srcCode);
+	// Print
+	println($jp.srcCode);
 
-			// Restore operator
-			mutator.restore();
+	// Restore operator
+	mutator.restore();
 
-		}
-	}
 }
 
 end
