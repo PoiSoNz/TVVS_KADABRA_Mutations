@@ -1,28 +1,25 @@
 import lara.mutation.Mutator;
 
 /**
- *  @param {$super} $super - A join point of type expression corresponding to a super constructor call.
+ *  @param {$joinpoint} $joinpoint - Joinpoint used as starting point to search for super constructor calls to be removed.
  */
-var InheritanceIPCMutator = function($super) {
+var InheritanceIPCMutator = function($joinpoint) {
 	// Parent constructor
    	Mutator.call(this);
 
 	// Instance variables
-	this.$super = $super;
-	this.originalSuperParent = undefined;
-	this.superParent = $super.parent;
-	this.mutationsArgs = arrayFromArgs(arguments, 1);
-	this.mutated = false;
+	this.toMutate = [];
+	this.currentIndex = 0;
 	
-	if(this.mutationsArgs.length > 0)
-		throw "InheritanceIPCMutator expects exactly one argument";
-	println("chamando IPC na funÃƒÂ§ao:");
-	println(this.$super.srcCode);
+	this.originalSuperCall = undefined;
+	this.$superCall = undefined;
 	
-	 //TODO: verificar se ÃƒÆ’Ã‚Â© super
-	if(!(this.$super.instanceOf('call') && this.$super.srcCode.startsWith("super(") && this.$super.srcCode.endsWith(")")))
-		throw "InheritanceIPCMutator expects a call to the super constructor, i.e. \"super(...)\", got " + this.$super.srcCode + " instead";
+	// Checks
+	var extraArgs = arrayFromArgs(arguments, 1);
+	if(extraArgs.length != 0)
+		throw "Expected only 1 argument but received " + (this.extraArgs.length + 1);
 
+	this.extractMutationTargets($joinpoint);
 };
 
 // Inheritance
@@ -31,35 +28,43 @@ InheritanceIPCMutator.prototype = Object.create(Mutator.prototype);
 
 /*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
+// Store super constructor calls
+InheritanceIPCMutator.prototype.extractMutationTargets = function($joinpoint) {
+
+	for($constructor of WeaverJps.search('constructor').get()) {
+		// Check if constructor contains a super call in its source code
+		if(!$constructor.srcCode.includes('super('))
+			continue;
+			
+		// Search for super calls inside constructors (since they can only appear inside constructors, we avoid searching the whole program)
+		for($descendant of $constructor.descendants) {
+			if(	$descendant.instanceOf('call') && 
+				$descendant.srcCode.startsWith('super(') && 
+				$descendant.srcCode.endsWith(')')
+			) {
+				this.toMutate.push($descendant);
+				break;
+			}
+		}
+	}
+}
+
 InheritanceIPCMutator.prototype.hasMutations = function() {
-	return !this.mutated;
+	return this.currentIndex < this.toMutate.length;
 }
 
 
 InheritanceIPCMutator.prototype._mutatePrivate = function() {
-	println("mutate");
-	this.originalSuperParent = this.$super.parent.copy();
+	this.$superCall = this.toMutate[this.currentIndex++];
+	this.originalSuperCall = this.$superCall.copy();
 
-	println("super parent antes");
-	println(this.superParent.srcCode);
-	
-	// Remove super call
-	this.$super.remove();
-
-	println("super parent DEPOIS");
-	println(this.superParent.srcCode);
-	
-	this.mutated = true;
+	// Replace super constructor call by a comment
+	this.$superCall = this.$superCall.insertReplace("// Super constructor call has been removed");
 }
 
 InheritanceIPCMutator.prototype._restorePrivate = function() {
-	println("INICIOU RESTORE");
-	println("super parent antes do restore");
-	println(this.superParent.srcCode);
-	println("super parent a restaurar");
-	println(this.originalSuperParent.srcCode);
-	// Restore operator
-	this.superParent = this.superParent.insertReplace(this.originalSuperParent.copy());
-	this.originalSuperParent = undefined;
-	println("FEZ RESTORE");
+	this.$superCall = this.$superCall.insertReplace(this.originalSuperCall.srcCode);
+
+	this.originalSuperCall = undefined;
+	this.$superCall = undefined;
 }

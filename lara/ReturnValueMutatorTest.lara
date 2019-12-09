@@ -1,0 +1,26 @@
+import kadabra.mutation.ReturnValueMutator;
+import weaver.WeaverJps;
+
+aspectdef ReturnValueMutatorTest
+
+var $jp = WeaverJps.root();
+
+var mutator = new ReturnValueMutator($jp);
+
+while(mutator.hasMutations()) {
+	// Mutate
+	mutator.mutate();
+
+	// Print mutation
+	print("mutado");
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator.restore();
+
+	// Print restore
+	print("restaurado");
+	println($jp.srcCode);
+}
+
+end
