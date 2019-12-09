@@ -1,0 +1,30 @@
+import kadabra.mutation.NonVoidCallMutator;
+import weaver.WeaverJps;
+
+aspectdef NonVoidCallMutatorTest
+
+var $jp = WeaverJps.root();
+
+var mutator = new NonVoidCallMutator($jp);
+
+while(mutator.hasMutations()) {
+	// Print original
+	print("original");
+	println($jp.srcCode);
+	
+	// Mutate
+	mutator.mutate();
+
+	// Print mutation
+	print("mutado");
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator.restore();
+
+	// Print restore
+	print("restaurado");
+	println($jp.srcCode);
+}
+
+end
