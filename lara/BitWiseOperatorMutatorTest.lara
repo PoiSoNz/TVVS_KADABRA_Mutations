@@ -3,23 +3,32 @@ import weaver.WeaverJps;
 
 aspectdef BitWiseOperatorMutatorTest
 
-for($op of WeaverJps.search('expression').get()) {
+var $jp = WeaverJps.root();
 
-	if($op.operator === '|') {
-		var mutator = new BitWiseOperatorMutator($op, "rhs", "^", "lhs", "&"); // [">", "=="] is also supported
+var mutator = new BitWiseOperatorMutator($jp, "|", "lhs", "^", "rhs", "&");
 
-		while(mutator.hasMutations()) {
-			// Mutate
-			mutator.mutate();
+while(mutator.hasMutations()) {
+	// Mutate
+	mutator.mutate();
 
-			// Print
-			println($op.ancestor('constructor').srcCode);
+	// Print
+	println($jp.srcCode);
 
-			// Restore operator
-			mutator.restore();
+	// Restore operator
+	mutator.restore();
+}
 
-		}
-	}
+var mutator2 = new BitWiseOperatorMutator($jp, "~", "");
+
+while(mutator2.hasMutations()) {
+	// Mutate
+	mutator2.mutate();
+
+	// Print
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator2.restore();
 }
 
 end

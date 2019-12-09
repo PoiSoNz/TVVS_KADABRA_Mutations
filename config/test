@@ -9,7 +9,7 @@
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>..\java\ConstructorCallTest.java</file>
+          <file>..\java\BitWiseOperatorTest.java</file>
         </fileList>
       </FileList>
     </entry>
@@ -65,7 +65,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>..\lara\ConstructorCallMutatorTest.lara</file>
+      <file>..\lara\BitWiseOperatorMutatorTest.lara</file>
     </entry>
     <entry>
       <string>stack trace</string>

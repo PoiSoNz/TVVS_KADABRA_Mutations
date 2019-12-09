@@ -4,18 +4,25 @@ import lara.mutation.Mutator;
  *  @param {$binaryExpression} $binaryExpression - A join point of type binaryExpression.
  *  @param {String[] | String...} newOperators - Operators that will be used to mutate the given binaryExpression.
  */
-var BitWiseOperatorMutator = function($bitwiseOperator) {
+var BitWiseOperatorMutator = function($joinPoint, bitwiseOperator) {
 	// Parent constructor
     Mutator.call(this);
 
 	// Instance variables
-	this.$bitwiseOperator = $bitwiseOperator;
-	this.newOperators = arrayFromArgs(arguments, 1);
+	this.$joinPoint = $joinPoint;
+	this.bitwiseOperator = bitwiseOperator;
+	this.newOperators = arrayFromArgs(arguments, 2);
+	
+	this.toMutate = [];
+	this.totalMutations = -1;
 	this.currentIndex = 0;
-	this.originalExpression = undefined;
+	this.newOperatorIndex = 0;
+
+	this.$originalExpression = undefined;
+	this.$bitwiseExpression = undefined;
 
 	var unaryOperators = ["~", ""];
-	var binaryOperators = ["|", "&", "^", "lhs", "rhs"];
+	var binaryOperators = ["|", "&", "^"];
 
 	var validMutations = [];
 	
@@ -23,28 +30,42 @@ var BitWiseOperatorMutator = function($bitwiseOperator) {
 	if(this.newOperators.length == 0)
 		throw "Expected mutations but received none";
 
-
-	// Check it is a bitwise operator
-	if($bitwiseOperator.instanceOf('binaryExpression') && binaryOperators.contains($bitwiseOperator.operator)) {
+	// Check if it is a bitwise operator
+	if(binaryOperators.contains(bitwiseOperator)) {
 		this.validMutations = Object.assign([], binaryOperators);
+		this.validMutations.push("lhs", "rhs");
 	}
-	else if($bitwiseOperator.instanceOf('unaryExpression') && unaryOperators.contains($bitwiseOperator.operator)) {
+	else if(unaryOperators.contains(bitwiseOperator)) {
 		this.validMutations = Object.assign([], unaryOperators);	
 	}
 	else {
-		throw "Expected a bitwise operator, received a " + $bitwiseOperator.operator;
+		throw "Expected a bitwise operator, received " + bitwiseOperator;
 	}
 
 	
-	var index = this.validMutations.indexOf($bitwiseOperator.operator);
+	var index = this.validMutations.indexOf(bitwiseOperator);
 	this.validMutations.splice(index, 1);
-	
+
+
+	for($exp of WeaverJps.searchFrom(this.$joinPoint, 'expression').get()) {
+		if($exp.operator === bitwiseOperator) { 
+			this.toMutate.push($exp);
+		}
+	}
+		
+	this.totalMutations = this.toMutate.length;
+	if(this.totalMutations == 0)
+		println("Found no suitable code to mutate");
+
+	//init $bitwiseExpression and $originalExpression for 1st iteration of mutation 
+	this.$bitwiseExpression = this.toMutate[0];
+	this.$originalExpression = this.toMutate[this.currentIndex].copy();
 	
 	for(var i = 0; i < this.newOperators.length; i++) {
 		if(!this.validMutations.contains(this.newOperators[i])) {
 			var appendMessage = "";
 			var invalidOperator = this.newOperators[i] === "" ? "\"\"" : this.newOperators[i];
-			if($bitwiseOperator.instanceOf('unaryExpression'))
+			if(this.$bitwiseExpression.instanceOf('unaryExpression'))
 				appendMessage = ", expected \"\"";
 			else
 				appendMessage = ", expected at least one of " + this.validMutations.toString();
@@ -62,44 +83,51 @@ BitWiseOperatorMutator.prototype = Object.create(Mutator.prototype);
 /*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
 BitWiseOperatorMutator.prototype.hasMutations = function() {
-	return this.currentIndex < this.newOperators.length;
+	return this.currentIndex < this.totalMutations;
 }
 
 
 BitWiseOperatorMutator.prototype._mutatePrivate = function() {
 	// Obtain new operator, increment index
-	var newOp = this.newOperators[this.currentIndex];
-	this.currentIndex++;
-
-	this.originalExpression = this.$bitwiseOperator.copy();
-
+	var newOp = this.newOperators[this.newOperatorIndex++];
+	
 	// Set new operator
 	if(newOp === "")
 		this.unaryMutate();
 	else
 		this.binaryMutate(newOp);
+
 }
 
 BitWiseOperatorMutator.prototype._restorePrivate = function() {
 	// Restore operator
-	this.$bitwiseOperator = this.$bitwiseOperator.insertReplace(this.originalExpression);
-	this.originalExpression = undefined;
+	this.$bitwiseExpression = this.$bitwiseExpression.insertReplace(this.$originalExpression.copy());
+
+	if(this.newOperatorIndex >= this.newOperators.length) {
+		this.newOperatorIndex = 0;
+		this.currentIndex++;
+		if(this.currentIndex < this.totalMutations) {
+			this.$bitwiseExpression = this.toMutate[this.currentIndex];
+			this.$originalExpression = this.toMutate[this.currentIndex].copy();
+		}
+	}
+	
 }
 
 BitWiseOperatorMutator.prototype.unaryMutate = function() {
-	var toReplace = this.$bitwiseOperator.operand.copy();
-	this.$bitwiseOperator = this.$bitwiseOperator.insertReplace(toReplace);
+	var toReplace = this.$bitwiseExpression.operand.copy();
+	this.$bitwiseExpression = this.$bitwiseExpression.insertReplace(toReplace);
 }
 
 BitWiseOperatorMutator.prototype.binaryMutate = function(newOp) {
 	if(newOp === "lhs") {
-		var lhs = this.$bitwiseOperator.lhs.copy();
-		this.$bitwiseOperator = this.$bitwiseOperator.insertReplace(lhs);
+		var lhs = this.$bitwiseExpression.lhs.copy();
+		this.$bitwiseExpression = this.$bitwiseExpression.insertReplace(lhs);
 	}
 	else if(newOp === "rhs") {
-		var rhs = this.$bitwiseOperator.rhs.copy();
-		this.$bitwiseOperator = this.$bitwiseOperator.insertReplace(rhs);
+		var rhs = this.$bitwiseExpression.rhs.copy();
+		this.$bitwiseExpression = this.$bitwiseExpression.insertReplace(rhs);
 	}
 	else
-		this.$bitwiseOperator.operator = newOp;
+		this.$bitwiseExpression.operator = newOp;
 }
