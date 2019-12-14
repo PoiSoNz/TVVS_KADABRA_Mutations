@@ -1,0 +1,60 @@
+import lara.mutation.Mutator;
+
+/**
+ *  @param {$binaryExpression} $binaryExpression - A join point of type binaryExpression.
+ *  @param {String[] | String...} newOperators - Operators that will be used to mutate the given binaryExpression.
+ */
+var ConditionalOperatorDeletionMutator = function($joinPoint) {
+	// Parent constructor
+    Mutator.call(this);
+
+	// Instance variables
+	this.$joinPoint = $joinPoint;
+	this.extraArgs = arrayFromArgs(arguments, 1);
+	
+	this.toMutate = [];
+	this.totalMutations = -1;
+	this.currentIndex = 0;
+	
+	this.$expression = undefined;
+	this.$originalExpression = undefined;
+	
+
+	// Checks
+	if(this.extraArgs.length != 0)
+		throw "Expected only 1 argument but received " + (this.extraArgs.length + 1);
+	
+	for($exp of WeaverJps.searchFrom(this.$joinpoint, 'unaryExpression').get()) {
+		if($exp.operator === "!")
+			this.toMutate.push($exp);
+	}
+	
+	this.totalMutations = this.toMutate.length;
+	if(this.totalMutations == 0)
+		println("Found no suitable code to mutate");
+
+};
+
+// Inheritance
+ConditionalOperatorDeletionMutator.prototype = Object.create(Mutator.prototype);
+
+
+/*** IMPLEMENTATION OF INSTANCE METHODS ***/
+
+ConditionalOperatorDeletionMutator.prototype.hasMutations = function() {
+	return this.currentIndex < this.totalMutations;
+}
+
+
+ConditionalOperatorDeletionMutator.prototype._mutatePrivate = function() {
+	this.$expression = this.toMutate[this.currentIndex++];
+
+	this.$originalExpression = this.$expression.copy();
+	this.$expression = this.$expression.insertReplace(this.$expression.operand.copy());
+}
+
+ConditionalOperatorDeletionMutator.prototype._restorePrivate = function() {
+	this.$expression = this.$expression.insertReplace(this.$originalExpression);
+	this.$originalExpression = undefined;
+	this.$expression = undefined;
+}
