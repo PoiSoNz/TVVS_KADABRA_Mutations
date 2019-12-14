@@ -31,7 +31,7 @@ InheritanceIPCMutator.prototype = Object.create(Mutator.prototype);
 // Store super constructor calls
 InheritanceIPCMutator.prototype.extractMutationTargets = function($joinpoint) {
 
-	for($constructor of WeaverJps.search('constructor').get()) {
+	for($constructor of WeaverJps.searchFrom($joinpoint, 'constructor').get()) {
 		// Check if constructor contains a super call in its source code
 		if(!$constructor.srcCode.includes('super('))
 			continue;
