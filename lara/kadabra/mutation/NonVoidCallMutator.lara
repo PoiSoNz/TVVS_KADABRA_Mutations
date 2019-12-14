@@ -55,7 +55,7 @@ NonVoidCallMutator.prototype.extractMutationTargets = function($joinpoint) {
 	};
 	var typeList = Object.keys(typeToValue);
 
-	for($call of WeaverJps.search('call').get()) {
+	for($call of WeaverJps.searchFrom($joinpoint, 'call').get()) {
 		if(this.hasValidAscendant($call) && $call.returnType !== 'void') {
 			// Store call for later modification
 			var mutationValue = typeList.includes($call.returnType) ? typeToValue[$call.returnType] : 'null';
@@ -72,12 +72,10 @@ NonVoidCallMutator.prototype.extractMutationTargets = function($joinpoint) {
 NonVoidCallMutator.prototype.hasValidAscendant = function($call) {
 	var validAncestors = ['assignment', 'localVariable', 'if', 'loop'];
 	for(validAncestor of validAncestors) {
-		// If $call.ancestor method creates an exception, it's because such an ancestor does not exist
-		// (KADABRA forced me to apply Xtreme measures)
-		try {
-			var ancestor = $call.ancestor(validAncestor);
+		// If $call.ancestor method is undefined, it's because such an ancestor does not exist
+		var ancestor = $call.ancestor(validAncestor);
+		if(typeof ancestor !== 'undefined')
 			return true;
-		} catch(e) {}
 	}
 	
 	return false;
