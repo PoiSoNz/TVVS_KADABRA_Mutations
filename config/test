@@ -9,7 +9,7 @@
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>..\java\InheritanceIPCTest.java</file>
+          <file>..\java\RemoveConditionalTest.java</file>
         </fileList>
       </FileList>
     </entry>
@@ -65,7 +65,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>..\lara\InheritanceIPCMutatorTest.lara</file>
+      <file>..\lara\RemoveConditionalMutatorTest.lara</file>
     </entry>
     <entry>
       <string>stack trace</string>

@@ -1,53 +1,9 @@
-public class NonVoidCallTest {
-	
-	protected int K = 0;
-	
-	public NonVoidCallTest() {
-		K = 3;
-		int c = ~K;
-		int d = K;
-		int e = ~5;
-		K += 1;
-		K = ~K;
-		K = K | 4;
-		calls();
-	}
+public class RemoveConditionalTest {
 	
 	public void calls() {
-		int a = this.intMethod(1, 2);
-		int aa = this.intMethod(23, 12) * this.intMethod(0, 1233) + intMethod(-12, 13);
-		a = this.intMethod(10, 11) * 2;
-		a += 2 * this.intMethod(10, 11);
-		K = intMethod(10, 11);
-		intMethod(10, 11);
-		short b = shortMethod();
-		shortMethod();
-		long c = longMethod();
-		longMethod();
-		byte d = this.byteMethod();
-		byteMethod();
-		char e = charMethod();
-		this.charMethod();
-		String f = stringMethod();
-		stringMethod();
-		float g = floatMethod();
-		floatMethod();
-		double h = this.doubleMethod();
-		doubleMethod();
-		boolean i = primitiveBooleanMethod();
-		primitiveBooleanMethod();
-		Boolean j = this.boxedBooleanMethod();
-		boxedBooleanMethod();
-		TestObjectClass k = objectMethod();
-		this.objectMethod();
 		
-		voidMethod();
-		this.voidMethod();
-		
-		if(this.doubleMethod() * doubleMethod() < this.intMethod(10, 11)) {
-			this.objectMethod();
+		if(this.doubleMethod() * doubleMethod() < this.intMethod(10, 11))
 			return;
-		}
 		
 		if(!this.primitiveBooleanMethod())
 			return;
@@ -55,10 +11,45 @@ public class NonVoidCallTest {
 		if(!primitiveBooleanMethod() && this.boxedBooleanMethod())
 			return;
 		
+		if(false)
+			return;
+		
+		if(this.boxedBooleanMethod()) {
+			if(stringMethod() == "teste") {
+				return;
+			} else if(this.intMethod(10, 11) * 2 < this.intMethod(4, 12)) {
+				boxedBooleanMethod();
+			} else if(this.intMethod(10, 11) == 4) {
+				boxedBooleanMethod();
+				int ternary1 = this.doubleMethod() + 2 >= 3 ? 5 : 7;
+			} else {
+				return;
+			}
+			boolean bol = primitiveBooleanMethod();
+			boolean i = true;
+			if(i == true) {
+				i = false;
+			}
+			
+			if(objectMethod() == null) {
+				return;
+			}
+		} else if(this.primitiveBooleanMethod()) {
+			if(this.doubleMethod() < 4.3) {
+				return;
+			} else if(this.intMethod(10, 11) == 4) {
+				boxedBooleanMethod();
+			}
+		} else {
+			return;
+		}
+		
 		while(this.doubleMethod() < 2)
 		{
 			String ff = stringMethod();
 		}
+		
+		int ternary2 =  this.doubleMethod() >= 3 ? 5 : 18;
 	}
 	
 	public int intMethod(int a1, int b2) {

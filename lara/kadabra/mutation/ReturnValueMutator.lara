@@ -13,10 +13,10 @@ var ReturnValueMutator = function($joinpoint) {
 	// Instance variables
 	this.toMutate = [];
 	this.currentIndex = 0;
-	
+
 	this.originalReturnExpression = undefined;
 	this.$returnExpression = undefined;
-	
+
 	// Checks
 	var extraArgs = arrayFromArgs(arguments, 1);
 	if(extraArgs.length != 0)
