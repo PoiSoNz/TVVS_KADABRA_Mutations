@@ -17,7 +17,7 @@ var ConstructorCallMutator = function($joinPoint) {
 	this.currentIndex = 0;
 	
 	this.$referenceParent = undefined;
-	this.originalParent = undefined;
+	this.$originalParent = undefined;
 	
 
 	// Checks
@@ -52,14 +52,14 @@ ConstructorCallMutator.prototype._mutatePrivate = function() {
 
 	//println(this.$referenceParent.parent.srcCode);
 
-	this.originalParent = this.$referenceParent.copy();
+	this.$originalParent = this.$referenceParent.copy();
 	this.$referenceParent = this.$referenceParent.insertReplace("null");
 
 	//println(this.$referenceParent.parent.srcCode);
 }
 
 ConstructorCallMutator.prototype._restorePrivate = function() {
-	this.$referenceParent = this.$referenceParent.insertReplace(this.originalParent);
-	this.originalParent = undefined;
+	this.$referenceParent = this.$referenceParent.insertReplace(this.$originalParent);
+	this.$originalParent = undefined;
 	this.$referenceParent = undefined;
 }

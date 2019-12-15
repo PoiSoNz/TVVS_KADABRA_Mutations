@@ -1,11 +1,11 @@
-import kadabra.mutation.ConstructorCallMutator;
+import kadabra.mutation.ConditionalOperatorDeletionMutator;
 import weaver.WeaverJps;
 
-aspectdef ConstructorCallMutatorTest
+aspectdef ConditionalOperatorDeletionMutatorTest
 
 var $jp = WeaverJps.root();
 
-var mutator = new ConstructorCallMutator($jp);
+var mutator = new ConditionalOperatorDeletionMutator($jp);
 
 while(mutator.hasMutations()) {
 	// Mutate
