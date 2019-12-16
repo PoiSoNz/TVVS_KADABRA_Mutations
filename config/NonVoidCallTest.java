@@ -56,6 +56,7 @@ public class NonVoidCallTest {
         int ternary1 = ((this.doubleMethod()) > 3) ? intMethod(1, 2) : intMethod(10, 11);
         while ((this.doubleMethod()) < 2) {
             String ff = stringMethod();
+            this.doubleMethod();
         } 
     }
 

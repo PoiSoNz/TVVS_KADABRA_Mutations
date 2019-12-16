@@ -60,6 +60,7 @@ public class NonVoidCallTest {
 		while(this.doubleMethod() < 2)
 		{
 			String ff = stringMethod();
+			this.doubleMethod();
 		}
 	}
 	
