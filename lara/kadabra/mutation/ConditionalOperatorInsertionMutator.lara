@@ -15,8 +15,8 @@ var ConditionalOperatorInsertionMutator = function($joinPoint) {
 	this.totalMutations = -1;
 	this.currentIndex = 0;
 	
-	this.$if = undefined;
-	this.$originalIf = undefined;
+	this.$conditional = undefined;
+	this.$originalConditional = undefined;
 	
 
 	// Checks
@@ -56,17 +56,17 @@ ConditionalOperatorInsertionMutator.prototype.hasMutations = function() {
 
 
 ConditionalOperatorInsertionMutator.prototype._mutatePrivate = function() {
-	this.$if = this.toMutate[this.currentIndex++];
+	this.$conditional = this.toMutate[this.currentIndex++];
 
-	this.$originalIf = this.$if.copy();
+	this.$originalConditional = this.$conditional.copy();
 
-	var cond = this.$if.cond;
+	var cond = this.$conditional.cond;
 	var newSrc = "!(" + cond.srcCode + ")";
 	cond.insertReplace(newSrc);
 }
 
 ConditionalOperatorInsertionMutator.prototype._restorePrivate = function() {
-	this.$if = this.$if.insertReplace(this.$originalIf);
-	this.$originalIf = undefined;
-	this.$if = undefined;
+	this.$conditional = this.$conditional.insertReplace(this.$originalConditional);
+	this.$originalConditional = undefined;
+	this.$conditional = undefined;
 }
