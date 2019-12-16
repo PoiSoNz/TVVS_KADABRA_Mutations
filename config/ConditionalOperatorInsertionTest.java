@@ -25,6 +25,24 @@ public class ConditionalOperatorInsertionTest {
         String s3 = (((k) == 0) || (a && ((k) > 0))) ? "a" : "s";
         String s4 = (!(((k) == 0) || (a && ((k) > 0)))) ? "d" : "f";
         String s5 = (!a) ? "d" : "f";
+        while (a) {
+            a = !a;
+        } 
+        while (!a) {
+            a = !a;
+        } 
+        while (((k) == 0) || (a && ((k) > 0))) {
+            (k)--;
+        } 
+        while (!(((k) == 0) || (a && ((k) > 0)))) {
+            (k)--;
+        } 
+        for (int i = 0; i < 50; i++) {
+            (k)++;
+        }
+        for (int i = 0; !(i > 50); i++) {
+            (k)++;
+        }
     }
 }
 
