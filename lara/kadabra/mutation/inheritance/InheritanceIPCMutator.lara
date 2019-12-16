@@ -28,7 +28,7 @@ InheritanceIPCMutator.prototype = Object.create(Mutator.prototype);
 
 /*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
-// Store super constructor calls
+/* Store super constructor calls */
 InheritanceIPCMutator.prototype.extractMutationTargets = function($joinpoint) {
 
 	for($constructor of WeaverJps.searchFrom($joinpoint, 'constructor').get()) {

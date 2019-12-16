@@ -1,7 +1,7 @@
 import lara.mutation.Mutator;
 
 /**
- *  @param {$joinPoint} $joinPoint - A join point to use as startpoint to search for conditionals to insert '!'.
+ *  @param {$joinPoint} $joinPoint - A join point to use as starting point to search for conditionals to insert '!'.
  */
 var ConditionalOperatorInsertionMutator = function($joinPoint) {
 	// Parent constructor
