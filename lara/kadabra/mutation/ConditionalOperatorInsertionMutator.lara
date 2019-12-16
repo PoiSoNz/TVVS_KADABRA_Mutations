@@ -1,0 +1,63 @@
+import lara.mutation.Mutator;
+
+/**
+ *  @param {$binaryExpression} $binaryExpression - A join point of type binaryExpression.
+ *  @param {String[] | String...} newOperators - Operators that will be used to mutate the given binaryExpression.
+ */
+var ConditionalOperatorInsertionMutator = function($joinPoint) {
+	// Parent constructor
+    Mutator.call(this);
+
+	// Instance variables
+	this.$joinPoint = $joinPoint;
+	this.extraArgs = arrayFromArgs(arguments, 1);
+	
+	this.toMutate = [];
+	this.totalMutations = -1;
+	this.currentIndex = 0;
+	
+	this.$if = undefined;
+	this.$originalIf = undefined;
+	
+
+	// Checks
+	if(this.extraArgs.length != 0)
+		throw "Expected only 1 argument but received " + (this.extraArgs.length + 1);
+	
+	for($if of WeaverJps.searchFrom(this.$joinpoint, 'if').get()) {
+		if(!($if.cond.instanceOf('unaryExpression') && $if.cond.operator === '!'))
+			this.toMutate.push($if);
+	}
+	
+	this.totalMutations = this.toMutate.length;
+	if(this.totalMutations == 0)
+		println("Found no suitable code to mutate");
+
+};
+
+// Inheritance
+ConditionalOperatorInsertionMutator.prototype = Object.create(Mutator.prototype);
+
+
+/*** IMPLEMENTATION OF INSTANCE METHODS ***/
+
+ConditionalOperatorInsertionMutator.prototype.hasMutations = function() {
+	return this.currentIndex < this.totalMutations;
+}
+
+
+ConditionalOperatorInsertionMutator.prototype._mutatePrivate = function() {
+	this.$if = this.toMutate[this.currentIndex++];
+
+	this.$originalIf = this.$if.copy();
+
+	var cond = this.$if.cond;
+	var newSrc = "!(" + cond.srcCode + ")";
+	cond.insertReplace(newSrc);
+}
+
+ConditionalOperatorInsertionMutator.prototype._restorePrivate = function() {
+	this.$if = this.$if.insertReplace(this.$originalIf);
+	this.$originalIf = undefined;
+	this.$if = undefined;
+}
