@@ -9,7 +9,7 @@
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>..\java\ConditionalOperatorInsertionTest.java</file>
+          <file>..\java\ConditionalOperatorDeletionTest.java</file>
         </fileList>
       </FileList>
     </entry>
@@ -65,7 +65,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>..\lara\ConditionalOperatorInsertionMutatorTest.lara</file>
+      <file>..\lara\ConditionalOperatorDeletionMutatorTest.lara</file>
     </entry>
     <entry>
       <string>stack trace</string>

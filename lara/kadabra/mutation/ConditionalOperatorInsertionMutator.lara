@@ -28,6 +28,11 @@ var ConditionalOperatorInsertionMutator = function($joinPoint) {
 		if(!($if.cond.instanceOf('unaryExpression') && $if.cond.operator === '!'))
 			this.toMutate.push($if);
 	}
+
+	for($ternary of WeaverJps.searchFrom(this.$joinpoint, 'ternary').get()) {
+		if(!($ternary.cond.instanceOf('unaryExpression') && $ternary.cond.operator === '!'))
+			this.toMutate.push($ternary);
+	}
 	
 	this.totalMutations = this.toMutate.length;
 	if(this.totalMutations == 0)
