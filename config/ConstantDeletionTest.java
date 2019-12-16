@@ -16,7 +16,7 @@ public class ConstantDeletionTest {
         int f = (a) * 3;
         f = (a) + (a);
         f = (((b) + (c)) - (d)) + 3;
-        if ((c) < (((d) + ((3 * (a)) / (c))) - 2)) {
+        if ((c) < (((d) + ((3 * (a)) / ((c) * (c)))) - 2)) {
             f = ((b) / (a)) + (d);
             boolean i = (((c) + (d)) + 2) > (((a) + ((3 * (b)) / (d))) - 2);
         }

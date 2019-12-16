@@ -2,13 +2,8 @@ import lara.mutation.Mutator;
 import kadabra.KadabraNodes;
 
 /**
- *  @param {$joinpoint} $joinpoint - Joinpoint used as starting point to search for non void method calls which will be replaced by a hardcoded value.
- *  Method call mutations:
- *  - If method type is primitive or boxed BOOLEAN, method call is replaced by false.
- *  - If method type is primitive INT, BYTE, SHORT OR LONG, method call is replaced by 0.
- *  - If method type is primitive FLOAT or DOUBLE, method call is replaced by 0.0.
- *  - If method type is primitive CHAR, method call is replaced by '\u0000'.
- *  - If method type is non of the above, method call is replaced by null.
+ *  @param {$joinpoint} $joinpoint - Joinpoint used as starting point to search for constants to be deleted from binary expressions.
+ *  @param {String} targetConstant - Target constant to be removed from binary expressions.
  */
 
 var ConstantDeletionMutator = function($joinpoint, targetConstant) {
@@ -43,7 +38,7 @@ ConstantDeletionMutator.prototype.extractMutationTargets = function($joinpoint) 
 	for($binaryExpression of WeaverJps.searchFrom($joinpoint, 'binaryExpression').get()) {
 		
 		if(($binaryExpression.lhs.srcCode === this.targetConstant || $binaryExpression.rhs.srcCode == this.targetConstant) 
-			&& $binaryExpression.lhs.srcCode != $binaryExpression.rhs.srcCode && $binaryExpression.type !== 'boolean') {
+			&& $binaryExpression.type !== 'boolean') {
 			this.toMutate.push($binaryExpression);
 		}
 	}
