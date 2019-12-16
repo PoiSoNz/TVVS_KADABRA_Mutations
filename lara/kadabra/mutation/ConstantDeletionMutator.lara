@@ -14,7 +14,7 @@ var ConstantDeletionMutator = function($joinpoint, targetConstant) {
 	this.toMutate = [];
 	this.currentIndex = 0;
 	
-	this.targetConstant = "(" + targetConstant + ")";
+	this.targetConstant = [targetConstant, '(' + targetConstant + ')'];
 	this.$originalNode = undefined;
 	this.$node = undefined;
 	
@@ -24,6 +24,9 @@ var ConstantDeletionMutator = function($joinpoint, targetConstant) {
 		throw "Expected only 2 argument but received " + (this.extraArgs.length + 2);
 
 	this.extractMutationTargets($joinpoint);
+
+	if(this.toMutate.length == 0)
+		println("Found no suitable code to mutate");
 };
 
 
@@ -33,12 +36,16 @@ ConstantDeletionMutator.prototype = Object.create(Mutator.prototype);
 
 /*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
-// Analyze method calls available for Non Void Call mutation and store them
+/* Analyze method binaryExpressions available for Constant Deletion mutation and store them */
 ConstantDeletionMutator.prototype.extractMutationTargets = function($joinpoint) {
 	for($binaryExpression of WeaverJps.searchFrom($joinpoint, 'binaryExpression').get()) {
-		
-		if(($binaryExpression.lhs.srcCode === this.targetConstant || $binaryExpression.rhs.srcCode == this.targetConstant) 
+	
+		var $lhs = $binaryExpression.lhs;
+		var $rhs = $binaryExpression.rhs;
+		if((	(this.targetConstant.contains($lhs.srcCode) && $lhs.isFinal)
+			|| (this.targetConstant.contains($rhs.srcCode) && $rhs.isFinal) )
 			&& $binaryExpression.type !== 'boolean') {
+			
 			this.toMutate.push($binaryExpression);
 		}
 	}
@@ -54,9 +61,9 @@ ConstantDeletionMutator.prototype._mutatePrivate = function() {
 
 	this.$originalNode = this.$node.copy();
 
-	if(this.$node.lhs.srcCode === this.targetConstant) {
+	if(this.targetConstant.contains(this.$node.lhs.srcCode)) {
 		this.$node = this.$node.insertReplace(this.$node.rhs);
-	} else if(this.$node.rhs.srcCode === this.targetConstant) {
+	} else if(this.targetConstant.contains(this.$node.rhs.srcCode)) {
 		this.$node = this.$node.insertReplace(this.$node.lhs);
 	}
 	

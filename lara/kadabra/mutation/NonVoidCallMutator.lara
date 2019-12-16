@@ -27,6 +27,9 @@ var NonVoidCallMutator = function($joinpoint) {
 		throw "Expected only 1 argument but received " + (this.extraArgs.length + 1);
 
 	this.extractMutationTargets($joinpoint);
+
+	if(this.toMutate.length == 0)
+		println("Found no suitable code to mutate");
 };
 
 

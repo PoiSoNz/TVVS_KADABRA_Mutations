@@ -22,6 +22,9 @@ var RemoveConditionalMutator = function($joinpoint) {
 		throw "Expected only 1 argument but received " + (this.extraArgs.length + 1);
 
 	this.extractMutationTargets($joinpoint);
+
+	if(this.toMutate.length == 0)
+		println("Found no suitable code to mutate");
 };
 
 
@@ -31,7 +34,7 @@ RemoveConditionalMutator.prototype = Object.create(Mutator.prototype);
 
 /*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
-// Search for if clauses for Remove Conditional mutation and store them
+/* Search for if clauses for Remove Conditional mutation and store them */
 RemoveConditionalMutator.prototype.extractMutationTargets = function($joinpoint) {
 	// A conditional can be either an if or a ternary operator
 	var conditionalElements = ['if', 'ternary'];

@@ -23,6 +23,9 @@ var ReturnValueMutator = function($joinpoint) {
 		throw "Expected only 1 argument but received " + (this.extraArgs.length + 1);
 
 	this.extractMutationTargets($joinpoint);
+
+	if(this.toMutate.length == 0)
+		println("Found no suitable code to mutate");
 };
 
 
@@ -32,7 +35,7 @@ ReturnValueMutator.prototype = Object.create(Mutator.prototype);
 
 /*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
-// Analyze method nodes available for Return Value mutation and store their return statements
+/* Analyze method nodes available for Return Value mutation and store their return statements */
 ReturnValueMutator.prototype.extractMutationTargets = function($joinpoint) {
 	var methodZeroTypes = ['int', 'short', 'long', 'char', 'float', 'double']; // Types whose return value will changed to 0.
 	var methodTrueTypes = ['boolean', 'Boolean']; // Types whose return value will changed to true.

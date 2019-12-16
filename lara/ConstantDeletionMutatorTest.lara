@@ -49,4 +49,70 @@ while(mutator2.hasMutations()) {
 	println($jp.srcCode);
 }
 
+var mutator3 = new ConstantDeletionMutator($jp, 'g');
+
+while(mutator3.hasMutations()) {
+	// Print original
+	print("original");
+	println($jp.srcCode);
+	
+	// Mutate
+	mutator3.mutate();
+
+	// Print mutation
+	print("mutado");
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator3.restore();
+
+	// Print restore
+	print("restaurado");
+	println($jp.srcCode);
+}
+
+var mutator4 = new ConstantDeletionMutator($jp, 'h');
+
+while(mutator4.hasMutations()) {
+	// Print original
+	print("original");
+	println($jp.srcCode);
+	
+	// Mutate
+	mutator4.mutate();
+
+	// Print mutation
+	print("mutado");
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator4.restore();
+
+	// Print restore
+	print("restaurado");
+	println($jp.srcCode);
+}
+
+var mutator5 = new ConstantDeletionMutator($jp, 'e');
+
+while(mutator5.hasMutations()) {
+	// Print original
+	print("original");
+	println($jp.srcCode);
+	
+	// Mutate
+	mutator5.mutate();
+
+	// Print mutation
+	print("mutado");
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator5.restore();
+
+	// Print restore
+	print("restaurado");
+	println($jp.srcCode);
+}
+
 end
