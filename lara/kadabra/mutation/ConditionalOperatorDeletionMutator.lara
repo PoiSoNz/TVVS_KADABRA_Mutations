@@ -1,7 +1,7 @@
 import lara.mutation.Mutator;
 
 /**
- *  @param {$joinPoint} $joinPoint - A join point to use as startpoint to search for possible mutations.
+ *  @param {$joinPoint} $joinPoint - A join point to use as startpoint to search for conditionals to remove '!'.
  */
 var ConditionalOperatorDeletionMutator = function($joinPoint) {
 	// Parent constructor
