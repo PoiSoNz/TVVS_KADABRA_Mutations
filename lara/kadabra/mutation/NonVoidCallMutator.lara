@@ -70,8 +70,7 @@ NonVoidCallMutator.prototype.extractMutationTargets = function($joinpoint) {
  *  - assignment, localVariable, if, loop
  */
 NonVoidCallMutator.prototype.hasValidAscendant = function($call) {
-	var validAncestors = ['assignment', 'localVariable', 'if', 'loop'];
-	//Para caso espicifico de ifs e loops, ver se ÃƒÂ© descendente do primeiro filho do if (que ÃƒÂ© a condiÃƒÂ§ÃƒÂ£o)
+	var validAncestors = ['assignment', 'localVariable', 'if', 'loop', 'ternary'];
 	for(validAncestor of validAncestors) {
 		// If $call.ancestor method is undefined, it's because such an ancestor does not exist
 		var ancestor = $call.ancestor(validAncestor);

@@ -55,6 +55,8 @@ public class NonVoidCallTest {
 		if(!primitiveBooleanMethod() && this.boxedBooleanMethod())
 			return;
 		
+		int ternary1 = this.doubleMethod() > 3 ? intMethod(1, 2) : intMethod(10, 11);
+		
 		while(this.doubleMethod() < 2)
 		{
 			String ff = stringMethod();
