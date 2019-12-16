@@ -1,8 +1,9 @@
 import lara.mutation.Mutator;
 
 /**
- *  @param {$binaryExpression} $binaryExpression - A join point of type binaryExpression.
- *  @param {String[] | String...} newOperators - Operators that will be used to mutate the given binaryExpression.
+ *  @param {$joinPoint} $joinPoint - A join point to use as startpoint to search for bitwise expressions to mutate.
+ *  @param {String} bitwiseOperator - The target operator to find and mutate.
+ *  @param {String[] | String...} newOperators - Operators that will be used to mutate the bitwise expressions found.
  */
 var BitWiseOperatorMutator = function($joinPoint, bitwiseOperator) {
 	// Parent constructor
