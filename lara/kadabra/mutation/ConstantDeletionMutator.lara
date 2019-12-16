@@ -1,0 +1,75 @@
+import lara.mutation.Mutator;
+import kadabra.KadabraNodes;
+
+/**
+ *  @param {$joinpoint} $joinpoint - Joinpoint used as starting point to search for non void method calls which will be replaced by a hardcoded value.
+ *  Method call mutations:
+ *  - If method type is primitive or boxed BOOLEAN, method call is replaced by false.
+ *  - If method type is primitive INT, BYTE, SHORT OR LONG, method call is replaced by 0.
+ *  - If method type is primitive FLOAT or DOUBLE, method call is replaced by 0.0.
+ *  - If method type is primitive CHAR, method call is replaced by '\u0000'.
+ *  - If method type is non of the above, method call is replaced by null.
+ */
+
+var ConstantDeletionMutator = function($joinpoint, targetConstant) {
+	// Parent constructor
+    Mutator.call(this);
+
+	// Instance variables
+	this.toMutate = [];
+	this.currentIndex = 0;
+	
+	this.targetConstant = "(" + targetConstant + ")";
+	this.$originalNode = undefined;
+	this.$node = undefined;
+	
+	// Checks
+	var extraArgs = arrayFromArgs(arguments, 2);
+	if(extraArgs.length != 0)
+		throw "Expected only 2 argument but received " + (this.extraArgs.length + 2);
+
+	this.extractMutationTargets($joinpoint);
+};
+
+
+// Inheritance
+ConstantDeletionMutator.prototype = Object.create(Mutator.prototype);
+
+
+/*** IMPLEMENTATION OF INSTANCE METHODS ***/
+
+// Analyze method calls available for Non Void Call mutation and store them
+ConstantDeletionMutator.prototype.extractMutationTargets = function($joinpoint) {
+	for($binaryExpression of WeaverJps.searchFrom($joinpoint, 'binaryExpression').get()) {
+		
+		if(($binaryExpression.lhs.srcCode === this.targetConstant || $binaryExpression.rhs.srcCode == this.targetConstant) 
+			&& $binaryExpression.lhs.srcCode != $binaryExpression.rhs.srcCode && $binaryExpression.type !== 'boolean') {
+			this.toMutate.push($binaryExpression);
+		}
+	}
+}
+
+ConstantDeletionMutator.prototype.hasMutations = function() {
+	return this.currentIndex < this.toMutate.length;
+}
+
+
+ConstantDeletionMutator.prototype._mutatePrivate = function() {
+	this.$node = this.toMutate[this.currentIndex++];
+
+	this.$originalNode = this.$node.copy();
+
+	if(this.$node.lhs.srcCode === this.targetConstant) {
+		this.$node = this.$node.insertReplace(this.$node.rhs);
+	} else if(this.$node.rhs.srcCode === this.targetConstant) {
+		this.$node = this.$node.insertReplace(this.$node.lhs);
+	}
+	
+}
+
+ConstantDeletionMutator.prototype._restorePrivate = function() {
+	this.$node = this.$node.insertReplace(this.$originalNode);
+
+	this.$originalNode = undefined;
+	this.$node = undefined;
+}
