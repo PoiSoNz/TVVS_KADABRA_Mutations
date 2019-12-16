@@ -1,8 +1,7 @@
 import lara.mutation.Mutator;
 
 /**
- *  @param {$binaryExpression} $binaryExpression - A join point of type binaryExpression.
- *  @param {String[] | String...} newOperators - Operators that will be used to mutate the given binaryExpression.
+ *  @param {$joinPoint} $joinPoint - A join point to use as startpoint to search for conditionals to remove '!'.
  */
 var ConditionalOperatorDeletionMutator = function($joinPoint) {
 	// Parent constructor
@@ -16,17 +15,27 @@ var ConditionalOperatorDeletionMutator = function($joinPoint) {
 	this.totalMutations = -1;
 	this.currentIndex = 0;
 	
-	this.$expression = undefined;
-	this.$originalExpression = undefined;
+	this.$conditional = undefined;
+	this.$originalConditional = undefined;
 	
 
 	// Checks
 	if(this.extraArgs.length != 0)
 		throw "Expected only 1 argument but received " + (this.extraArgs.length + 1);
-	
-	for($exp of WeaverJps.searchFrom(this.$joinpoint, 'unaryExpression').get()) {
-		if($exp.operator === "!")
-			this.toMutate.push($exp);
+
+	for($if of WeaverJps.searchFrom(this.$joinpoint, 'if').get()) {
+		if($if.cond.instanceOf('unaryExpression') && $if.cond.operator === '!')
+			this.toMutate.push($if);
+	}
+
+	for($ternary of WeaverJps.searchFrom(this.$joinpoint, 'ternary').get()) {
+		if($ternary.cond.instanceOf('unaryExpression') && $ternary.cond.operator === '!')
+			this.toMutate.push($ternary);
+	}
+
+	for($loop of WeaverJps.searchFrom(this.$joinpoint, 'loop').get()) {
+		if($loop.cond.instanceOf('unaryExpression') && $loop.cond.operator === '!')
+			this.toMutate.push($loop);
 	}
 	
 	this.totalMutations = this.toMutate.length;
@@ -47,14 +56,14 @@ ConditionalOperatorDeletionMutator.prototype.hasMutations = function() {
 
 
 ConditionalOperatorDeletionMutator.prototype._mutatePrivate = function() {
-	this.$expression = this.toMutate[this.currentIndex++];
+	this.$conditional = this.toMutate[this.currentIndex++];
 
-	this.$originalExpression = this.$expression.copy();
-	this.$expression = this.$expression.insertReplace(this.$expression.operand.copy());
+	this.$originalConditional = this.$conditional.copy();
+	this.$conditional.cond.insertReplace(this.$conditional.cond.operand.copy());
 }
 
 ConditionalOperatorDeletionMutator.prototype._restorePrivate = function() {
-	this.$expression = this.$expression.insertReplace(this.$originalExpression);
-	this.$originalExpression = undefined;
-	this.$expression = undefined;
+	this.$conditional = this.$conditional.insertReplace(this.$originalConditional);
+	this.$originalConditional = undefined;
+	this.$conditional = undefined;
 }

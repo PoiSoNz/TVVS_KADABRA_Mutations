@@ -1,8 +1,7 @@
 import lara.mutation.Mutator;
 
 /**
- *  @param {$binaryExpression} $binaryExpression - A join point of type binaryExpression.
- *  @param {String[] | String...} newOperators - Operators that will be used to mutate the given binaryExpression.
+ *  @param {$joinPoint} $joinPoint - A join point to use as startpoint to search for conditionals to insert '!'.
  */
 var ConditionalOperatorInsertionMutator = function($joinPoint) {
 	// Parent constructor
@@ -16,8 +15,8 @@ var ConditionalOperatorInsertionMutator = function($joinPoint) {
 	this.totalMutations = -1;
 	this.currentIndex = 0;
 	
-	this.$if = undefined;
-	this.$originalIf = undefined;
+	this.$conditional = undefined;
+	this.$originalConditional = undefined;
 	
 
 	// Checks
@@ -32,6 +31,11 @@ var ConditionalOperatorInsertionMutator = function($joinPoint) {
 	for($ternary of WeaverJps.searchFrom(this.$joinpoint, 'ternary').get()) {
 		if(!($ternary.cond.instanceOf('unaryExpression') && $ternary.cond.operator === '!'))
 			this.toMutate.push($ternary);
+	}
+
+	for($loop of WeaverJps.searchFrom(this.$joinpoint, 'loop').get()) {
+		if(!($loop.cond.instanceOf('unaryExpression') && $loop.cond.operator === '!'))
+			this.toMutate.push($loop);
 	}
 	
 	this.totalMutations = this.toMutate.length;
@@ -52,17 +56,17 @@ ConditionalOperatorInsertionMutator.prototype.hasMutations = function() {
 
 
 ConditionalOperatorInsertionMutator.prototype._mutatePrivate = function() {
-	this.$if = this.toMutate[this.currentIndex++];
+	this.$conditional = this.toMutate[this.currentIndex++];
 
-	this.$originalIf = this.$if.copy();
+	this.$originalConditional = this.$conditional.copy();
 
-	var cond = this.$if.cond;
+	var cond = this.$conditional.cond;
 	var newSrc = "!(" + cond.srcCode + ")";
 	cond.insertReplace(newSrc);
 }
 
 ConditionalOperatorInsertionMutator.prototype._restorePrivate = function() {
-	this.$if = this.$if.insertReplace(this.$originalIf);
-	this.$originalIf = undefined;
-	this.$if = undefined;
+	this.$conditional = this.$conditional.insertReplace(this.$originalConditional);
+	this.$originalConditional = undefined;
+	this.$conditional = undefined;
 }

@@ -1,0 +1,45 @@
+import kadabra.mutation.BitWiseOperatorMutator;
+import weaver.WeaverJps;
+import lara.Check;
+import mutation.TestResources;
+
+/**
+ * @test
+ */
+function testBitWiseOperatorMutator() {
+
+	var $jp = WeaverJps.root();
+	
+	var mutator = new BitWiseOperatorMutator($jp, "|", "lhs", "^", "rhs", "&");
+	
+	var actualOutput = "";
+	
+	while(mutator.hasMutations()) {
+		// Mutate
+		mutator.mutate();
+	
+		// Output
+		actualOutput += $jp.srcCode;
+	
+		// Restore operator
+		mutator.restore();
+	}
+	
+	var mutator2 = new BitWiseOperatorMutator($jp, "~", "");
+	
+	while(mutator2.hasMutations()) {
+		// Mutate
+		mutator2.mutate();
+	
+		// Output
+		actualOutput += $jp.srcCode;
+	
+		// Restore operator
+		mutator2.restore();
+	}
+
+	Check.strings(actualOutput, TestResources.getString("testBitWiseOperatorMutator.output"));
+
+
+
+}
