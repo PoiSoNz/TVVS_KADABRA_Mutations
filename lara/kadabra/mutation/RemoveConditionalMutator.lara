@@ -37,7 +37,7 @@ RemoveConditionalMutator.prototype = Object.create(Mutator.prototype);
 /* Search for if clauses for Remove Conditional mutation and store them */
 RemoveConditionalMutator.prototype.extractMutationTargets = function($joinpoint) {
 	// A conditional can be either an if or a ternary operator
-	var conditionalElements = ['if', 'ternary'];
+	var conditionalElements = ['if', 'ternary', 'loop'];
 	for(conditionalElement of conditionalElements) {
 		for($element of WeaverJps.searchFrom($joinpoint, conditionalElement).get()) {
 			println($element.cond);
