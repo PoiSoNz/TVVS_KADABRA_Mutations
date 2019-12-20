@@ -4,8 +4,7 @@ import weaver.WeaverJps;
 /**
  * @test
  */
-aspectdef BitWiseOperatorMutatorTest
-
+aspectdef ConstructorCallMutatorTest
 var $jp = WeaverJps.root();
 
 var mutator = new ConstructorCallMutator($jp);

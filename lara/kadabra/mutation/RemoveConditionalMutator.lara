@@ -1,0 +1,70 @@
+import lara.mutation.Mutator;
+import kadabra.KadabraNodes;
+
+/**
+ *  @param {$joinpoint} $joinpoint - Joinpoint used as starting point to search for if clauses whose condition will be replaced by true.
+ */
+
+var RemoveConditionalMutator = function($joinpoint) {
+	// Parent constructor
+    Mutator.call(this);
+
+	// Instance variables
+	this.toMutate = [];
+	this.currentIndex = 0;
+	
+	this.originalConditionalClause = undefined;
+	this.$conditionalClause = undefined;
+	
+	// Checks
+	var extraArgs = arrayFromArgs(arguments, 1);
+	if(extraArgs.length != 0)
+		throw "Expected only 1 argument but received " + (this.extraArgs.length + 1);
+
+	this.extractMutationTargets($joinpoint);
+
+	if(this.toMutate.length == 0)
+		println("Found no suitable code to mutate");
+};
+
+
+// Inheritance
+RemoveConditionalMutator.prototype = Object.create(Mutator.prototype);
+
+
+/*** IMPLEMENTATION OF INSTANCE METHODS ***/
+
+/* Search for if clauses for Remove Conditional mutation and store them */
+RemoveConditionalMutator.prototype.extractMutationTargets = function($joinpoint) {
+	// A conditional can be either an if or a ternary operator
+	var conditionalElements = ['if', 'ternary', 'loop'];
+	for(conditionalElement of conditionalElements) {
+		for($element of WeaverJps.searchFrom($joinpoint, conditionalElement).get()) {
+			println($element.cond);
+			this.toMutate.push($element.cond);
+		}
+	}
+	println(this.toMutate.length);
+}
+
+RemoveConditionalMutator.prototype.hasMutations = function() {
+	return this.currentIndex < this.toMutate.length;
+}
+
+
+RemoveConditionalMutator.prototype._mutatePrivate = function() {
+	this.$conditionalClause = this.toMutate[this.currentIndex++];
+	this.originalConditionalClause = this.$conditionalClause.copy();
+
+	var mutatedCondition = 'true';
+	
+	this.$conditionalClause = this.$conditionalClause.insertReplace(mutatedCondition);
+	
+}
+
+RemoveConditionalMutator.prototype._restorePrivate = function() {
+	this.$conditionalClause = this.$conditionalClause.insertReplace(this.originalConditionalClause);
+	
+	this.originalConditionalClause = undefined;
+	this.$conditionalClause = undefined;
+}

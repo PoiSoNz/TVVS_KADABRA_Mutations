@@ -1,0 +1,118 @@
+import kadabra.mutation.ConstantDeletionMutator;
+import weaver.WeaverJps;
+
+aspectdef ConstantDeletionMutatorTest
+
+var $jp = WeaverJps.root();
+
+var mutator = new ConstantDeletionMutator($jp, 'a');
+
+while(mutator.hasMutations()) {
+	// Print original
+	print("original");
+	println($jp.srcCode);
+	
+	// Mutate
+	mutator.mutate();
+
+	// Print mutation
+	print("mutado");
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator.restore();
+
+	// Print restore
+	print("restaurado");
+	println($jp.srcCode);
+}
+
+var mutator2 = new ConstantDeletionMutator($jp, 'c');
+
+while(mutator2.hasMutations()) {
+	// Print original
+	print("original");
+	println($jp.srcCode);
+	
+	// Mutate
+	mutator2.mutate();
+
+	// Print mutation
+	print("mutado");
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator2.restore();
+
+	// Print restore
+	print("restaurado");
+	println($jp.srcCode);
+}
+
+var mutator3 = new ConstantDeletionMutator($jp, 'g');
+
+while(mutator3.hasMutations()) {
+	// Print original
+	print("original");
+	println($jp.srcCode);
+	
+	// Mutate
+	mutator3.mutate();
+
+	// Print mutation
+	print("mutado");
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator3.restore();
+
+	// Print restore
+	print("restaurado");
+	println($jp.srcCode);
+}
+
+var mutator4 = new ConstantDeletionMutator($jp, 'h');
+
+while(mutator4.hasMutations()) {
+	// Print original
+	print("original");
+	println($jp.srcCode);
+	
+	// Mutate
+	mutator4.mutate();
+
+	// Print mutation
+	print("mutado");
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator4.restore();
+
+	// Print restore
+	print("restaurado");
+	println($jp.srcCode);
+}
+
+var mutator5 = new ConstantDeletionMutator($jp, 'e');
+
+while(mutator5.hasMutations()) {
+	// Print original
+	print("original");
+	println($jp.srcCode);
+	
+	// Mutate
+	mutator5.mutate();
+
+	// Print mutation
+	print("mutado");
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator5.restore();
+
+	// Print restore
+	print("restaurado");
+	println($jp.srcCode);
+}
+
+end

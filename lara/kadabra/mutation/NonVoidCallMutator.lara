@@ -10,7 +10,6 @@ import kadabra.KadabraNodes;
  *  - If method type is primitive CHAR, method call is replaced by '\u0000'.
  *  - If method type is non of the above, method call is replaced by null.
  */
-
 var NonVoidCallMutator = function($joinpoint) {
 	// Parent constructor
     Mutator.call(this);
@@ -28,6 +27,9 @@ var NonVoidCallMutator = function($joinpoint) {
 		throw "Expected only 1 argument but received " + (this.extraArgs.length + 1);
 
 	this.extractMutationTargets($joinpoint);
+
+	if(this.toMutate.length == 0)
+		println("Found no suitable code to mutate");
 };
 
 
@@ -55,32 +57,23 @@ NonVoidCallMutator.prototype.extractMutationTargets = function($joinpoint) {
 	};
 	var typeList = Object.keys(typeToValue);
 
-	for($call of WeaverJps.search('call').get()) {
-		if(this.hasValidAscendant($call) && $call.returnType !== 'void') {
-			// Store call for later modification
-			var mutationValue = typeList.includes($call.returnType) ? typeToValue[$call.returnType] : 'null';
-			this.toMutate.push([$call, mutationValue]);
-		}
-	}
-}
-
-/**
- *  Returns true if a $call is acceptable for mutation
- *  A calls is acceptable if it's descendant of at least one of the following:
- *  - assignment, localVariable, if, loop
- */
-NonVoidCallMutator.prototype.hasValidAscendant = function($call) {
 	var validAncestors = ['assignment', 'localVariable', 'if', 'loop'];
 	for(validAncestor of validAncestors) {
-		// If $call.ancestor method creates an exception, it's because such an ancestor does not exist
-		// (KADABRA forced me to apply Xtreme measures)
-		try {
-			var ancestor = $call.ancestor(validAncestor);
-			return true;
-		} catch(e) {}
+		for($ancestor of WeaverJps.searchFrom($joinpoint, validAncestor).get()) {
+			/* When the ancester is an if or a loop, only the ancestors on the condition will be analyzed. 
+			 Because the ones present in the body will be analyzed by assignment expressions. */
+			var descendants = (validAncestor === 'if' || validAncestor === 'loop') ? $ancestor.cond.descendants : $ancestor.descendants;
+			
+			for($descendant of descendants) {
+				// Search for non-void calls
+				if($descendant.instanceOf('call') && $descendant.returnType !== 'void') {
+					// Store call for later modification
+					var mutationValue = typeList.includes($descendant.returnType) ? typeToValue[$descendant.returnType] : 'null';
+					this.toMutate.push([$descendant, mutationValue]);
+				}
+			}
+		}
 	}
-	
-	return false;
 }
 
 NonVoidCallMutator.prototype.hasMutations = function() {

@@ -1,0 +1,22 @@
+import kadabra.mutation.ConditionalOperatorDeletionMutator;
+import weaver.WeaverJps;
+
+aspectdef ConditionalOperatorDeletionMutatorTest
+
+var $jp = WeaverJps.root();
+
+var mutator = new ConditionalOperatorDeletionMutator($jp);
+
+while(mutator.hasMutations()) {
+	// Mutate
+	mutator.mutate();
+
+	// Print
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator.restore();
+
+}
+
+end

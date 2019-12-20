@@ -1,8 +1,7 @@
 import lara.mutation.Mutator;
 
 /**
- *  @param {$binaryExpression} $binaryExpression - A join point of type binaryExpression.
- *  @param {String[] | String...} newOperators - Operators that will be used to mutate the given binaryExpression.
+ *  @param {$joinPoint} $joinPoint - A join point to use as startpoint to search for constructor calls to replace with null.
  */
 var ConstructorCallMutator = function($joinPoint) {
 	// Parent constructor
@@ -17,7 +16,7 @@ var ConstructorCallMutator = function($joinPoint) {
 	this.currentIndex = 0;
 	
 	this.$referenceParent = undefined;
-	this.originalParent = undefined;
+	this.$originalParent = undefined;
 	
 
 	// Checks
@@ -50,16 +49,12 @@ ConstructorCallMutator.prototype.hasMutations = function() {
 ConstructorCallMutator.prototype._mutatePrivate = function() {
 	this.$referenceParent = this.toMutate[this.currentIndex++].parent;
 
-	//println(this.$referenceParent.parent.srcCode);
-
-	this.originalParent = this.$referenceParent.copy();
+	this.$originalParent = this.$referenceParent.copy();
 	this.$referenceParent = this.$referenceParent.insertReplace("null");
-
-	//println(this.$referenceParent.parent.srcCode);
 }
 
 ConstructorCallMutator.prototype._restorePrivate = function() {
-	this.$referenceParent = this.$referenceParent.insertReplace(this.originalParent);
-	this.originalParent = undefined;
+	this.$referenceParent = this.$referenceParent.insertReplace(this.$originalParent);
+	this.$originalParent = undefined;
 	this.$referenceParent = undefined;
 }

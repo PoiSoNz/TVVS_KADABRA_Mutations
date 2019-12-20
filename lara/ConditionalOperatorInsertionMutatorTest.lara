@@ -1,0 +1,22 @@
+import kadabra.mutation.ConditionalOperatorInsertionMutator;
+import weaver.WeaverJps;
+
+aspectdef ConditionalOperatorInsertionMutatorTest
+
+var $jp = WeaverJps.root();
+
+var mutator = new ConditionalOperatorInsertionMutator($jp);
+
+while(mutator.hasMutations()) {
+	// Mutate
+	mutator.mutate();
+
+	// Print
+	println($jp.srcCode);
+
+	// Restore operator
+	mutator.restore();
+
+}
+
+end

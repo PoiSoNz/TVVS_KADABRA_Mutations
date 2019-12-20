@@ -1,0 +1,69 @@
+import lara.mutation.Mutator;
+
+/**
+ *  @param {$joinPoint} $joinPoint - A join point to use as starting point to search for conditionals to remove '!'.
+ */
+var ConditionalOperatorDeletionMutator = function($joinPoint) {
+	// Parent constructor
+    Mutator.call(this);
+
+	// Instance variables
+	this.$joinPoint = $joinPoint;
+	this.extraArgs = arrayFromArgs(arguments, 1);
+	
+	this.toMutate = [];
+	this.totalMutations = -1;
+	this.currentIndex = 0;
+	
+	this.$conditional = undefined;
+	this.$originalConditional = undefined;
+	
+
+	// Checks
+	if(this.extraArgs.length != 0)
+		throw "Expected only 1 argument but received " + (this.extraArgs.length + 1);
+
+	for($if of WeaverJps.searchFrom(this.$joinpoint, 'if').get()) {
+		if($if.cond.instanceOf('unaryExpression') && $if.cond.operator === '!')
+			this.toMutate.push($if);
+	}
+
+	for($ternary of WeaverJps.searchFrom(this.$joinpoint, 'ternary').get()) {
+		if($ternary.cond.instanceOf('unaryExpression') && $ternary.cond.operator === '!')
+			this.toMutate.push($ternary);
+	}
+
+	for($loop of WeaverJps.searchFrom(this.$joinpoint, 'loop').get()) {
+		if($loop.cond.instanceOf('unaryExpression') && $loop.cond.operator === '!')
+			this.toMutate.push($loop);
+	}
+	
+	this.totalMutations = this.toMutate.length;
+	if(this.totalMutations == 0)
+		println("Found no suitable code to mutate");
+
+};
+
+// Inheritance
+ConditionalOperatorDeletionMutator.prototype = Object.create(Mutator.prototype);
+
+
+/*** IMPLEMENTATION OF INSTANCE METHODS ***/
+
+ConditionalOperatorDeletionMutator.prototype.hasMutations = function() {
+	return this.currentIndex < this.totalMutations;
+}
+
+
+ConditionalOperatorDeletionMutator.prototype._mutatePrivate = function() {
+	this.$conditional = this.toMutate[this.currentIndex++];
+
+	this.$originalConditional = this.$conditional.copy();
+	this.$conditional.cond.insertReplace(this.$conditional.cond.operand.copy());
+}
+
+ConditionalOperatorDeletionMutator.prototype._restorePrivate = function() {
+	this.$conditional = this.$conditional.insertReplace(this.$originalConditional);
+	this.$originalConditional = undefined;
+	this.$conditional = undefined;
+}
