@@ -1,6 +1,9 @@
 import kadabra.mutation.ConstantDeletionMutator;
 import weaver.WeaverJps;
 
+/**
+ * @test
+ */
 aspectdef ConstantDeletionMutatorTest
 
 var $jp = WeaverJps.root();
