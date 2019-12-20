@@ -1,6 +1,9 @@
 import kadabra.mutation.ReturnValueMutator;
 import weaver.WeaverJps;
 
+/**
+ * @test
+ */
 aspectdef ReturnValueMutatorTest
 
 var $jp = WeaverJps.root();

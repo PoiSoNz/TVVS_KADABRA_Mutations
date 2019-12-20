@@ -1,6 +1,9 @@
 import kadabra.mutation.NonVoidCallMutator;
 import weaver.WeaverJps;
 
+/**
+ * @test
+ */
 aspectdef NonVoidCallMutatorTest
 
 var $jp = WeaverJps.root();

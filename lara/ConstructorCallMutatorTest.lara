@@ -1,6 +1,9 @@
 import kadabra.mutation.ConstructorCallMutator;
 import weaver.WeaverJps;
 
+/**
+ * @test
+ */
 aspectdef BitWiseOperatorMutatorTest
 
 var $jp = WeaverJps.root();
