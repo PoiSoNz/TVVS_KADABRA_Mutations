@@ -1,6 +1,9 @@
 import kadabra.mutation.ConditionalOperatorDeletionMutator;
 import weaver.WeaverJps;
 
+/**
+ * @test
+ */
 aspectdef ConditionalOperatorDeletionMutatorTest
 
 var $jp = WeaverJps.root();

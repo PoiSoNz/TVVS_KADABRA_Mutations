@@ -1,6 +1,9 @@
 import kadabra.mutation.ConditionalOperatorInsertionMutator;
 import weaver.WeaverJps;
 
+/**
+ * @test
+ */
 aspectdef ConditionalOperatorInsertionMutatorTest
 
 var $jp = WeaverJps.root();

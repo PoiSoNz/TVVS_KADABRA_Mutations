@@ -1,8 +1,10 @@
 import kadabra.mutation.ConstructorCallMutator;
 import weaver.WeaverJps;
 
+/**
+ * @test
+ */
 aspectdef ConstructorCallMutatorTest
-
 var $jp = WeaverJps.root();
 
 var mutator = new ConstructorCallMutator($jp);

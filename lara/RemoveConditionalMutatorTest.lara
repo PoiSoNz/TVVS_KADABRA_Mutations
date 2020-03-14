@@ -1,6 +1,9 @@
 import kadabra.mutation.RemoveConditionalMutator;
 import weaver.WeaverJps;
 
+/**
+ * @test
+ */
 aspectdef RemoveConditionalMutatorTest
 
 var $jp = WeaverJps.root();

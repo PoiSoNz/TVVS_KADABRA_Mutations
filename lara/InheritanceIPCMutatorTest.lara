@@ -1,7 +1,10 @@
 import kadabra.mutation.inheritance.InheritanceIPCMutator;
-import kadabra.mutation.utils.Utils;
+//import kadabra.mutation.utils.Utils;
 import weaver.WeaverJps;
 
+/**
+ * @test
+ */
 aspectdef InheritanceIPCMutatorTest
 
 var $jp = WeaverJps.root();
